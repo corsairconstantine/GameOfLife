@@ -1,6 +1,7 @@
 #include "gameOfLife.h"
 #include <iostream>
 #include <vector>
+#include <numeric>
 
 using namespace std;
 
@@ -12,7 +13,6 @@ vector <vector <int>> deadState(int w, int h) {
             row.push_back(0);
         st.push_back(row);
     }
-    cout << "made a dead state " << st[0].size() << 'x' << st.size() << endl;
     return st;
 }
 vector <vector <int>> randomState(int w, int h) {
@@ -23,7 +23,6 @@ vector <vector <int>> randomState(int w, int h) {
             row.push_back(rand() % 2);
         st.push_back(row);
     }
-    cout << "made a random state " << st[0].size() << 'x' << st.size() << endl;
     return st;
 
 }
@@ -50,14 +49,15 @@ std::vector <std::vector <int>> newState(vector <vector <int>> st) {
             if (st[height][width] == 1) {          // if cell is alive
                 if (neighbors(st, height, width) < 2) // if number of neighbours is 0 or 1
                     newSt[height][width] = 0;
+                if (neighbors(st, height, width) == 2 || neighbors(st, height, width) == 3)
+                    newSt[height][width] = 1;
                 if (neighbors(st, height, width) > 3) // if number of neigbours is 4 or more
                     newSt[height][width] = 0;
             }
             else if (neighbors(st, height, width) == 3) // if cell is dead
                 newSt[height][width] = 1;
         }
-    }             // TO DO -- I need to make a new state, modify it using old state, and return new state
-    cout << "made a new state" << endl;
+    }             
     return newSt;
 }
 
@@ -70,4 +70,13 @@ void render(vector <vector <int>> &st) {
                 cout << '.' << ' ';
         cout << endl;
     }
+}
+
+bool isDead(std::vector <std::vector <int>> &st) {
+    int sum = 0;
+    for (int row = 0; row < st.size(); ++row)
+        sum += accumulate(st[row].begin(), st[row].end(), 0);
+    if (sum == 0)
+        return true;
+    return false;
 }
